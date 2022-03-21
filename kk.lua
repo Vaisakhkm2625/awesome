@@ -53,7 +53,7 @@ beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
-editor = os.getenv("EDITOR") or "vi"
+editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -65,19 +65,19 @@ modkey = "Mod4"
 
 -- Table of layouts to cover with awful.layout.inc, order matters.
 awful.layout.layouts = {
-    awful.layout.suit.tile,
     awful.layout.suit.floating,
-    --awful.layout.suit.tile.left,
+    awful.layout.suit.tile,
+    awful.layout.suit.tile.left,
     awful.layout.suit.tile.bottom,
-    --awful.layout.suit.tile.top,
+    awful.layout.suit.tile.top,
     awful.layout.suit.fair,
-    --awful.layout.suit.fair.horizontal,
-    --awful.layout.suit.spiral,
-    --awful.layout.suit.spiral.dwindle,
+    awful.layout.suit.fair.horizontal,
+    awful.layout.suit.spiral,
+    awful.layout.suit.spiral.dwindle,
     awful.layout.suit.max,
-    --awful.layout.suit.max.fullscreen,
-    --awful.layout.suit.magnifier,
-    --awful.layout.suit.corner.nw,
+    awful.layout.suit.max.fullscreen,
+    awful.layout.suit.magnifier,
+    awful.layout.suit.corner.nw,
     -- awful.layout.suit.corner.ne,
     -- awful.layout.suit.corner.sw,
     -- awful.layout.suit.corner.se,
@@ -125,7 +125,7 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock(" %a %b %d, %l:%M%P", 15)
+mytextclock = wibox.widget.textclock()
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = gears.table.join(
@@ -231,10 +231,7 @@ awful.screen.connect_for_each_screen(function(s)
             mykeyboardlayout,
             wibox.widget.systray(),
             mytextclock,
-            wibox.widget.textbox('  |  '),
-             -- one way to do that:
-             awful.widget.watch('bash -c "vcgencmd measure_temp"', 15),
-             s.mylayoutbox,
+            s.mylayoutbox,
         },
     }
 end)
@@ -295,7 +292,7 @@ globalkeys = gears.table.join(
         {description = "go back", group = "client"}),
 
     -- Standard program
-    awful.key({ modkey,           }, "Return", function () awful.spawn(terminal) end,
+    awful.key({ modkey,           }, "Return", function () awful.spawn("xterm") end,
               {description = "open a terminal", group = "launcher"}),
     awful.key({ modkey, "Control" }, "r", awesome.restart,
               {description = "reload awesome", group = "awesome"}),
@@ -332,27 +329,8 @@ globalkeys = gears.table.join(
               {description = "restore minimized", group = "client"}),
 
     -- Prompt
-    awful.key({ modkey },            "r",     function () awful.util.spawn("rofi -show combi -combi-modi \"window,run,drun\" -modi combi -show-icons") end,
-	    -- awful.screen.focused().mypromptbox:run() end,
+    awful.key({ modkey },            "r",     function () awful.screen.focused().mypromptbox:run() end,
               {description = "run prompt", group = "launcher"}),
-
-    -- Prompt
-    awful.key({ modkey },   "a",     function () awful.spawn.easy_async_with_shell("mimeopen $(find|rofi -dmenu)") end,
-	    -- awful.screen.focused().mypromptbox:run() end,
-              {description = "file fuzzy search", group = "launcher"}),
-
-    -- Browser
-    awful.key({ modkey },            "b",     function () awful.util.spawn("chromium-browser") end,
-	    -- awful.screen.focused().mypromptbox:run() end,
-              {description = "chromium", group = "applications"}),
-    -- Emoji
-    awful.key({ modkey },            "e",     function () awful.util.spawn("emoji") end,
-	    -- awful.screen.focused().mypromptbox:run() end,
-              {description = "emoji", group = "applications"}),
-    --Screen shot 
-    awful.key({ modkey, "Shift" },            "s",     function () awful.util.spawn("sc") end,
-	    -- awful.screen.focused().mypromptbox:run() end,
-              {description = "screen shot", group = "applications"}),
 
     awful.key({ modkey }, "x",
               function ()
@@ -530,7 +508,7 @@ awful.rules.rules = {
 
     -- Add titlebars to normal clients and dialogs
     { rule_any = {type = { "normal", "dialog" }
-      }, properties = { titlebars_enabled = false }
+      }, properties = { titlebars_enabled = true }
     },
 
     -- Set Firefox to always map on the tag named "2" on screen 1.
@@ -602,15 +580,3 @@ end)
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 -- }}}
---
---
---
---
--- --autostart-apps--------------------------------------------------------
---
- awful.spawn.with_shell("compton")
- awful.spawn.with_shell("nitrogen --restore")
--- awful.spawn.with_shell()
--- awful.spawn.with_shell()
---
-beautiful.useless_gap = 5
